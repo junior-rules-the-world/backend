@@ -1,0 +1,40 @@
+version: "3"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: app
+    container_name: app
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - ${PORT}:${PORT}
+    depends_on:
+      - postgres
+
+  postgres:
+      image: postgres:latest
+      container_name: pgx
+      restart: unless-stopped
+      env_file:
+        - .env
+      volumes:
+        - pgx:/data/pgx
+      ports:
+        - ${POSTGRES_PORT}:${POSTGRES_PORT}
+      networks:
+        - postgres
+      environment:
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        PGDATA: /data/pgx
+
+volumes:
+  api:
+  postgres:
+
+networks:
+  postgres:
