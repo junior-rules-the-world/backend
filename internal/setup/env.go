@@ -11,6 +11,7 @@ type Env struct {
 	JWTSecret  string `mapstructure:"JWT_SECRET"`
 	DBUser     string `mapstructure:"POSTGRES_USER"`
 	DBPassword string `mapstructure:"POSTGRES_PASSWORD"`
+	DBHost     string `mapstructure:"POSTGRES_HOST"`
 	DBPort     string `mapstructure:"POSTGRES_PORT"`
 	DBName     string `mapstructure:"POSTGRES_NAME"`
 }

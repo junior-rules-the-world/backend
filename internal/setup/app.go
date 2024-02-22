@@ -1,7 +1,7 @@
 package setup
 
 import (
-	"events-organizator/internal/postgres"
+	"events-organizator/pkg/postgres"
 )
 
 type Application struct {
