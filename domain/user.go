@@ -7,14 +7,15 @@ import (
 )
 
 type User struct {
-	ID        int       `json:"id" db:"user_id"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email,omitempty"`
-	Password  string    `json:"password"`
-	Role      *string   `json:"role,omitempty"`
-	TeamID    *int      `json:"team_id,omitempty" db:"team_id"`
-	CreatedAt time.Time `json:"created_at,omitempty" db:"created_at"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" db:"updated_at"`
+	ID          int       `json:"id" db:"user_id"`
+	DisplayName string    `json:"display_name" db:"display_name"`
+	Username    string    `json:"username"`
+	Email       string    `json:"email,omitempty"`
+	Password    string    `json:"password"`
+	Role        *string   `json:"role,omitempty"`
+	TeamID      *int      `json:"team_id,omitempty" db:"team_id"`
+	CreatedAt   time.Time `json:"created_at,omitempty" db:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at,omitempty" db:"updated_at"`
 }
 
 type TokenizedUser struct {
@@ -23,7 +24,8 @@ type TokenizedUser struct {
 }
 
 type UserRepository interface {
-	Create(user *User) error
+	Create(user *User) (User, error)
+	Update(id int, updated *User) error
 	FindByUsername(username string) (User, error)
 	FindById(username int) (User, error)
 }
