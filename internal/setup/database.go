@@ -1,22 +1,22 @@
 package setup
 
 import (
-	"events-organizator/pkg/postgres"
+	"events-organizator/internal/postgres"
 	"fmt"
 	"log"
 )
 
 func NewPostgresConnection(env *Env) *postgres.Postgres {
-	postgresURL := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", env.DBUser, env.DBPassword, env.DBHost, env.DBPort, env.DBName)
-	postgres, err := postgres.NewConn(postgresURL)
+	postgresURL := fmt.Sprintf("conn://%s:%s@%s:%s/%s", env.DBUser, env.DBPassword, env.DBHost, env.DBPort, env.DBName)
+	conn, err := postgres.NewConn(postgresURL)
 	if err != nil {
-		log.Fatalf("Error while connecting to postgres: %s", err)
+		log.Fatalf("Error while connecting to conn: %s", err)
 	}
 
-	err = postgres.Ping()
+	err = conn.Ping()
 	if err != nil {
-		log.Fatalf("Got an error while connecting to postgres: %s", err)
+		log.Fatalf("Got an error while connecting to conn: %s", err)
 	}
 
-	return postgres
+	return conn
 }
