@@ -8,7 +8,7 @@ import (
 
 type User struct {
 	ID          int       `json:"id" db:"user_id"`
-	DisplayName string    `json:"display_name" db:"display_name"`
+	DisplayName *string   `json:"display_name" db:"display_name"`
 	Username    string    `json:"username"`
 	Email       string    `json:"email,omitempty"`
 	Password    string    `json:"password"`
@@ -49,10 +49,25 @@ func (u *User) ComparePasswords(password string) error {
 
 func (u *User) BeforeCreate() error {
 	u.Email = strings.ToLower(strings.TrimSpace(u.Email))
+	u.Username = strings.ToLower(strings.TrimSpace(u.Username))
+	*u.DisplayName = strings.ToLower(strings.TrimSpace(*u.DisplayName))
 	u.Password = strings.ToLower(strings.TrimSpace(u.Password))
+
+	if u.DisplayName == nil {
+		*u.DisplayName = u.Username
+	}
 
 	if err := u.HashPassword(); err != nil {
 		return err
+	}
+
+	return nil
+}
+func (u *User) BeforeUpdate() error {
+	*u.DisplayName = strings.ToLower(strings.TrimSpace(*u.DisplayName))
+
+	if u.DisplayName == nil {
+		*u.DisplayName = u.Username
 	}
 
 	return nil
