@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"events-organizator/domain"
+	"events-organizator/internal/domain"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,7 +16,7 @@ func NewUserRepository(db *sqlx.DB) *UserRepository {
 	}
 }
 
-func (u *UserRepository) Create(user *domain.User) (*domain.User, error) {
+func (u *UserRepository) Create(ctx context.Context, user *domain.User) (*domain.User, error) {
 	query := "insert into users (display_name, username, email, password, team_id) values ($1, $2, $3, $4, $5);"
 
 	err := user.BeforeCreate()
@@ -28,7 +28,7 @@ func (u *UserRepository) Create(user *domain.User) (*domain.User, error) {
 
 	tx := u.db.MustBegin()
 	err = tx.
-		QueryRowxContext(context.Background(), query, user.DisplayName, user.Username, user.Password, user.TeamID).
+		QueryRowxContext(ctx, query, user.DisplayName, user.Username, user.Password, user.TeamID).
 		StructScan(u)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func (u *UserRepository) Create(user *domain.User) (*domain.User, error) {
 	return &dest, nil
 }
 
-func (u *UserRepository) Update(id int, updated *domain.User) error {
+func (u *UserRepository) Update(ctx context.Context, id int, updated *domain.User) error {
 	query := "update users set display_name = coalesce(nullif($2, ''), display_name), role = coalesce(nullif($3, ''), role),team_id = $4,updated_at = now() where id = $1;"
 
 	err := updated.BeforeUpdate()
@@ -52,7 +52,7 @@ func (u *UserRepository) Update(id int, updated *domain.User) error {
 	dest := domain.User{}
 
 	tx := u.db.MustBegin()
-	err = tx.QueryRowxContext(context.Background(), query, id, updated.DisplayName, updated.Role, updated.TeamID).StructScan(dest)
+	err = tx.QueryRowxContext(ctx, query, id, updated.DisplayName, updated.Role, updated.TeamID).StructScan(dest)
 	if err != nil {
 		return err
 	}
@@ -64,11 +64,11 @@ func (u *UserRepository) Update(id int, updated *domain.User) error {
 	return nil
 }
 
-func (u *UserRepository) FindByUsername(username string) (*domain.User, error) {
+func (u *UserRepository) FindByUsername(ctx context.Context, username string) (*domain.User, error) {
 	query := "select from users where username like $1;"
 	dest := domain.User{}
 
-	err := u.db.QueryRowxContext(context.Background(), query, username).StructScan(dest)
+	err := u.db.QueryRowxContext(ctx, query, username).StructScan(dest)
 	if err != nil {
 		return nil, err
 	}
@@ -76,11 +76,24 @@ func (u *UserRepository) FindByUsername(username string) (*domain.User, error) {
 	return &dest, nil
 }
 
-func (u *UserRepository) FindById(id int) (*domain.User, error) {
+func (u *UserRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
+	query := "select from users where email=$1"
+
+	dest := domain.User{}
+
+	err := u.db.QueryRowxContext(ctx, query, email).StructScan(dest)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dest, nil
+}
+
+func (u *UserRepository) FindById(ctx context.Context, id int) (*domain.User, error) {
 	query := "select from users where id=$1"
 	dest := domain.User{}
 
-	err := u.db.QueryRowxContext(context.Background(), query, id).StructScan(dest)
+	err := u.db.QueryRowxContext(ctx, query, id).StructScan(dest)
 	if err != nil {
 		return nil, err
 	}
