@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"context"
 	"golang.org/x/crypto/bcrypt"
 	"strings"
 	"time"
@@ -24,10 +25,11 @@ type TokenizedUser struct {
 }
 
 type UserRepository interface {
-	Create(user *User) (User, error)
-	Update(id int, updated *User) error
-	FindByUsername(username string) (User, error)
-	FindById(username int) (User, error)
+	Create(ctx context.Context, user *User) (*User, error)
+	Update(ctx context.Context, id int, updated *User) error
+	FindByEmail(ctx context.Context, email string) (*User, error)
+	FindByUsername(ctx context.Context, username string) (*User, error)
+	FindById(ctx context.Context, id int) (*User, error)
 }
 
 func (u *User) HashPassword() error {
