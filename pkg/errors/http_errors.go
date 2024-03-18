@@ -9,6 +9,7 @@ const (
 	Unauthorized        = "UNAUTHORIZED"
 	WrongCredentials    = "WRONG_CREDENTIALS"
 	ServerError         = "INTERNAL_SERVER_ERROR"
+	Validation          = "JSON_VALIDATE_ERROR"
 )
 
 type HttpErr interface {
@@ -20,7 +21,7 @@ type HttpErr interface {
 type HttpError struct {
 	StatusCode int         `json:"status_code,omitempty"`
 	Key        string      `json:"key,omitempty"`
-	Stack      interface{} `json:"-"`
+	Stack      interface{} `json:"stack"`
 }
 
 func (err HttpError) Status() int {
@@ -35,8 +36,8 @@ func (err HttpError) Causes() interface{} {
 	return err.Stack
 }
 
-func NewHttpError(status int, key string, stack interface{}) HttpError {
-	return HttpError{
+func NewHttpError(status int, key string, stack interface{}) *HttpError {
+	return &HttpError{
 		StatusCode: status,
 		Key:        key,
 		Stack:      stack,

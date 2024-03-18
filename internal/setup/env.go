@@ -6,14 +6,15 @@ import (
 )
 
 type Env struct {
-	Mode       string `mapstructure:"APP_ENV"`
-	Address    string `mapstructure:"SERVER_ADDRESS"`
-	JWTSecret  string `mapstructure:"JWT_SECRET"`
-	DBUser     string `mapstructure:"POSTGRES_USER"`
-	DBPassword string `mapstructure:"POSTGRES_PASSWORD"`
-	DBHost     string `mapstructure:"POSTGRES_HOST"`
-	DBPort     string `mapstructure:"POSTGRES_PORT"`
-	DBName     string `mapstructure:"POSTGRES_NAME"`
+	Mode           string `mapstructure:"APP_ENV"`
+	Address        string `mapstructure:"SERVER_ADDRESS"`
+	ContextTimeout int    `mapstructure:"CONTEXT_TIMEOUT"`
+	JWTSecret      string `mapstructure:"JWT_SECRET"`
+	DBUser         string `mapstructure:"POSTGRES_USER"`
+	DBPassword     string `mapstructure:"POSTGRES_PASSWORD"`
+	DBHost         string `mapstructure:"POSTGRES_HOST"`
+	DBPort         string `mapstructure:"POSTGRES_PORT"`
+	DBName         string `mapstructure:"POSTGRES_NAME"`
 }
 
 func NewEnv() *Env {

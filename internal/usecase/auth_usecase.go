@@ -2,33 +2,31 @@ package usecase
 
 import (
 	"context"
-	"events-organizator/internal/domain"
+	"events-organizator/internal/domain/models"
 	"events-organizator/pkg/errors"
 	"net/http"
 	"time"
 )
 
 type UserRepository interface {
-	Create(ctx context.Context, user *domain.User) (*domain.User, error)
-	Update(ctx context.Context, id int, updated *domain.User) error
-	FindByEmail(ctx context.Context, email string) (*domain.User, error)
-	FindByUsername(ctx context.Context, username string) (*domain.User, error)
-	FindById(ctx context.Context, id int) (*domain.User, error)
+	Create(ctx context.Context, user *models.User) (*models.User, error)
+	FindByEmail(ctx context.Context, email string) (*models.User, error)
+	FindByUsername(ctx context.Context, username string) (*models.User, error)
 }
 
-type UserUsecase struct {
+type AuthUsecase struct {
 	repo       UserRepository
 	ctxTimeout time.Duration
 }
 
-func NewUserUsecase(repo UserRepository, timeout time.Duration) *UserUsecase {
-	return &UserUsecase{
+func NewAuthUsecase(repo UserRepository, timeout time.Duration) *AuthUsecase {
+	return &AuthUsecase{
 		repo:       repo,
 		ctxTimeout: timeout,
 	}
 }
 
-func (uc *UserUsecase) Register(ctx context.Context, user *domain.User) (*domain.User, error) {
+func (uc *AuthUsecase) Register(ctx context.Context, user *models.User) (*models.User, *errors.HttpError) {
 	ctx, cancel := context.WithTimeout(ctx, uc.ctxTimeout)
 	defer cancel()
 
@@ -39,10 +37,6 @@ func (uc *UserUsecase) Register(ctx context.Context, user *domain.User) (*domain
 	userExists, err = uc.repo.FindByEmail(ctx, user.Email)
 	if userExists != nil || err == nil {
 		return nil, errors.NewHttpError(http.StatusBadRequest, errors.EmailAlreadyUsed, nil)
-	}
-
-	if err = user.BeforeCreate(); err != nil {
-		return nil, errors.NewHttpError(http.StatusInternalServerError, errors.ServerError, err)
 	}
 
 	user, err = uc.repo.Create(ctx, user)

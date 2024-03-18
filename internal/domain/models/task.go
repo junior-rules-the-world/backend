@@ -1,4 +1,4 @@
-package domain
+package models
 
 type Task struct {
 	ID          int    `json:"task_id" db:"task_id"`
