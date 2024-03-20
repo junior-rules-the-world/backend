@@ -63,7 +63,7 @@ func (u *UserRepository) Update(ctx context.Context, id int, updated *models.Use
 }
 
 func (u *UserRepository) FindByUsername(ctx context.Context, username string) (*models.User, error) {
-	query := "select from users where username=$1;"
+	query := "select * from users where username=$1;"
 	dest := &models.User{}
 
 	err := u.DB.QueryRowxContext(ctx, query, username).StructScan(dest)
@@ -75,7 +75,7 @@ func (u *UserRepository) FindByUsername(ctx context.Context, username string) (*
 }
 
 func (u *UserRepository) FindByEmail(ctx context.Context, email string) (*models.User, error) {
-	query := "select from users where email=$1"
+	query := "select * from users where email=$1"
 
 	dest := &models.User{}
 
@@ -88,7 +88,7 @@ func (u *UserRepository) FindByEmail(ctx context.Context, email string) (*models
 }
 
 func (u *UserRepository) FindById(ctx context.Context, id int) (*models.User, error) {
-	query := "select from users where id=$1"
+	query := "select * from users where id=$1"
 	dest := &models.User{}
 
 	err := u.DB.QueryRowxContext(ctx, query, id).StructScan(dest)
