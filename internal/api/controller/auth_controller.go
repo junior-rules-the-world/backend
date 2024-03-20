@@ -9,6 +9,7 @@ import (
 	"events-organizator/pkg/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 type AuthController struct {
@@ -21,14 +22,14 @@ func (u *AuthController) Register(ctx *gin.Context) {
 
 	err := ctx.ShouldBindJSON(&request)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, errors.NewHttpError(http.StatusBadRequest, errors.Validation, err))
+		ctx.JSON(http.StatusBadRequest, errors.NewHttpError(http.StatusBadRequest, errors.Validation, strings.Split(err.Error(), "\n")))
 		return
 	}
 
 	user := &models.User{
 		DisplayName: request.DisplayName,
 		Username:    request.Username,
-		Email:       request.Username,
+		Email:       request.Email,
 		Password:    request.Password,
 		Role:        request.Role,
 		TeamID:      request.TeamID,

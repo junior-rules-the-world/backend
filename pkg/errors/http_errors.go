@@ -21,7 +21,7 @@ type HttpErr interface {
 type HttpError struct {
 	StatusCode int         `json:"status_code,omitempty"`
 	Key        string      `json:"key,omitempty"`
-	Stack      interface{} `json:"stack"`
+	Stack      interface{} `json:"stack,omitempty"`
 }
 
 func (err HttpError) Status() int {
