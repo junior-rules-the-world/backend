@@ -17,7 +17,7 @@ type AuthController struct {
 	Env         *setup.Env
 }
 
-func (u *AuthController) Register(ctx *gin.Context) {
+func (c *AuthController) Register(ctx *gin.Context) {
 	var request dto.RegisterRequest
 
 	err := ctx.ShouldBindJSON(&request)
@@ -34,7 +34,7 @@ func (u *AuthController) Register(ctx *gin.Context) {
 		Role:        request.Role,
 		TeamID:      request.TeamID,
 	}
-	createdUser, httpErr := u.AuthUsecase.Register(context.Background(), user)
+	createdUser, httpErr := c.AuthUsecase.Register(context.Background(), user)
 	if httpErr != nil {
 		ctx.JSON(httpErr.Status(), httpErr)
 		return
@@ -43,4 +43,32 @@ func (u *AuthController) Register(ctx *gin.Context) {
 	response := dto.RegisterResponse{User: createdUser}
 
 	ctx.JSON(http.StatusCreated, response)
+}
+
+func (c *AuthController) Login(ctx *gin.Context) {
+	var request dto.LoginRequest
+
+	err := ctx.ShouldBindJSON(&request)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errors.NewHttpError(http.StatusBadRequest, errors.Validation, strings.Split(err.Error(), "\n")))
+		return
+	}
+
+	user := &models.User{
+		Username: request.Username,
+		Email:    request.Email,
+		Password: request.Password,
+	}
+
+	tokenized, httpErr := c.AuthUsecase.Login(context.Background(), user)
+	if httpErr != nil {
+		ctx.JSON(httpErr.Status(), httpErr)
+		return
+	}
+
+	response := dto.LoginResponse{
+		User: tokenized,
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }

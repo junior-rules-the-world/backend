@@ -7,15 +7,15 @@ import (
 	"events-organizator/internal/usecase"
 	"github.com/gin-gonic/gin"
 	"github.com/jmoiron/sqlx"
-	"time"
 )
 
-func NewAuthRoute(env *setup.Env, timeout time.Duration, db sqlx.DB, group *gin.RouterGroup) {
+func NewAuthRoute(env *setup.Env, db sqlx.DB, group *gin.RouterGroup) {
 	r := repository.NewUserRepository(&db)
 	c := controller.AuthController{
-		AuthUsecase: usecase.NewAuthUsecase(r, timeout),
+		AuthUsecase: usecase.NewAuthUsecase(r, *env),
 		Env:         env,
 	}
 
 	group.POST("/register", c.Register)
+	group.POST("/login", c.Login)
 }

@@ -14,3 +14,13 @@ type RegisterRequest struct {
 type RegisterResponse struct {
 	User *models.User
 }
+
+type LoginRequest struct {
+	Username string `json:"username" binding:"omitempty,gte=4"`
+	Email    string `json:"email,omitempty" binding:"omitempty,email"`
+	Password string `json:"password" binding:"omitempty,gte=6"`
+}
+
+type LoginResponse struct {
+	User *models.TokenizedUser
+}
