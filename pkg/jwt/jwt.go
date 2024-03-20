@@ -24,7 +24,7 @@ func GenerateJWT(user *models.User, env *setup.Env) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString(env.JWTSecret)
+	tokenString, err := token.SignedString([]byte(env.JWTSecret))
 
 	if err != nil {
 		return "", err
