@@ -14,6 +14,7 @@ type UserRepository interface {
 	Create(ctx context.Context, user *models.User) (*models.User, error)
 	FindByEmail(ctx context.Context, email string) (*models.User, error)
 	FindByUsername(ctx context.Context, username string) (*models.User, error)
+	FindById(ctx context.Context, id int) (*models.User, error)
 }
 
 type AuthUsecase struct {
@@ -74,4 +75,17 @@ func (uc *AuthUsecase) Login(ctx context.Context, u *models.User) (*models.Token
 		User:  user,
 		Token: token,
 	}, nil
+}
+
+func (uc *AuthUsecase) Me(ctx context.Context, id int) (*models.User, errors.HttpErr) {
+	ctx, cancel := context.WithTimeout(ctx, uc.timeout)
+	defer cancel()
+
+	user, err := uc.repo.FindById(ctx, id)
+
+	if err != nil {
+		return nil, errors.NewHttpError(http.StatusNotFound, errors.NotFound, nil)
+	}
+
+	return user, nil
 }
