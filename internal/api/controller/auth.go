@@ -72,3 +72,14 @@ func (c *AuthController) Login(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (c *AuthController) Me(ctx *gin.Context) {
+	id := ctx.GetInt("X-User-ID")
+
+	user, err := c.AuthUsecase.Me(context.Background(), id)
+	if err != nil {
+		ctx.JSON(err.Status(), err)
+	}
+
+	ctx.JSON(http.StatusOK, user)
+}

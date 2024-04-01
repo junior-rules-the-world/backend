@@ -2,6 +2,7 @@ package route
 
 import (
 	"events-organizator/internal/api/controller"
+	"events-organizator/internal/api/middleware"
 	"events-organizator/internal/repository"
 	"events-organizator/internal/setup"
 	"events-organizator/internal/usecase"
@@ -18,4 +19,6 @@ func NewAuthRoute(env *setup.Env, db sqlx.DB, group *gin.RouterGroup) {
 
 	group.POST("/register", c.Register)
 	group.POST("/login", c.Login)
+
+	group.GET("/me", middleware.Jwt(env), c.Me)
 }
